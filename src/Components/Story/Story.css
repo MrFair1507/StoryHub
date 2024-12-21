@@ -1,0 +1,92 @@
+.story-card {
+  position: relative;
+  height: 300px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.3s;
+}
+.story-card:hover {
+  transform: scale(1.02);
+}
+
+.story-cover {
+  width: 100%;
+  height: 320px;
+  object-fit: cover;
+}
+
+.story-info {
+  padding: 16px;
+  background: white;
+  margin-top: 120px;
+}
+
+.story-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.story-author {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+
+.story-genres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.genre-tag {
+  background: #f3e8ff;
+  color: #8b5cf6;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.story-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  padding: 24px;
+}
+
+.story-card:hover .story-overlay {
+  opacity: 1;
+}
+
+.read-button {
+  background: #8b5cf6;
+  color: white;
+  border: none;
+  padding: 8px 24px;
+  border-radius: 20px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.read-button:hover {
+  background: #7c3aed;
+}
+
+.story-description {
+  color: white;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.5;
+}
