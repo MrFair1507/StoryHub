@@ -1,0 +1,41 @@
+/* StoryPage.css */
+.story-page {
+    min-height: 100vh;
+    background: #f9fafb;
+   }
+   
+   .content-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+   }
+   
+   .header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+   }
+   
+   .divider {
+    height: 1px;
+    background: #e5e7eb;
+    margin: 24px 0;
+   }
+   
+   /* Media queries */
+   @media (max-width: 768px) {
+    .content-wrapper {
+      padding: 16px;
+    }
+   
+    .header-section {
+      flex-direction: column;
+      gap: 16px;
+    }
+   }
+   
+   /* Smooth scroll */
+   html {
+    scroll-behavior: smooth;
+   }

@@ -1,5 +1,6 @@
 import React from "react";
-import { Search, Menu, User } from "lucide-react";
+import { Search, Menu, User, Plus } from "lucide-react";
+import { Link } from "react-router-dom";
 import "./Header.css";
 
 const Header = () => {
@@ -17,7 +18,9 @@ const Header = () => {
       <div className="header-container">
         <div className="header-top">
           <div className="logo">
-            <h1>StoryHub</h1>
+            <Link to="/" style={{ textDecoration: "none" }}>
+              <h1>StoryHub</h1>
+            </Link>
           </div>
 
           <div className="search-bar">
@@ -26,6 +29,10 @@ const Header = () => {
           </div>
 
           <div className="nav-icons">
+            <Link to="/create-story" className="create-button">
+              <Plus size={20} />
+              <span>Create</span>
+            </Link>
             <Menu className="icon" size={24} />
             <User className="icon" size={24} />
           </div>

@@ -1,59 +1,35 @@
-import React from 'react'
+import React from 'react';
 import './MangaContent.css';
 
-function MangaContent() {
-  const chapters = [
-    {
-      id: 1,
-      title: "Chapter 1",
-      author: "Nguyễn Văn A",
-      translator: "Reset Scans",
-      published: "12/24/2024",
-    },
-    {
-      id: 2,
-      title: "Chapter 2", 
-      author: "Nguyễn Văn A",
-      translator: "Reset Scans",
-      published: "12/24/2024",
-    },
-    {
-      id: 3,
-      title: "Chapter 3",
-      author: "Nguyễn Văn A", 
-      translator: "Reset Scans",
-      published: "12/24/2024",
-    },
-    {
-      id: 4,
-      title: "Chapter 4",
-      author: "Nguyễn Văn A",
-      translator: "Reset Scans", 
-      published: "12/24/2024",
-    },
-    {
-      id: 5,
-      title: "Chapter 5",
-      author: "Nguyễn Văn A",
-      translator: "Reset Scans",
-      published: "12/24/2024",
-    }
-  ];
-
+function MangaContent({chapter}) {
   return (
-    <main className="main-content">
-      <h2 className="chapter-title">Chapter</h2>
-      <div className="chapters-grid">
-        {chapters.map((chapter) => (
-          <div key={chapter.id} className="chapter-card">
-            <h3>{chapter.title}</h3>
-            <p>{chapter.author}</p>
-            <p>{chapter.translator}</p>
-            <p>{chapter.published}</p>
-          </div>
-        ))}
+    
+
+      <div className="chapter-card">
+        <img 
+          src={chapter.cover || '/images/default-manga-cover.jpg'} 
+          alt={chapter.title} 
+          className="chapter-cover" 
+        />
+        <div className="chapter-info">
+          <h3 className="chapter-title">{chapter.title}</h3>
+          <p className="chapter-author">Tác giả: {chapter.author}</p>
+          <p className="chapter-translator">Nhóm dịch: {chapter.translator}</p>
+          <p className="chapter-date">Ngày đăng: {chapter.published}</p>
+          {chapter.genres && (
+            <div className="chapter-genres">
+              {chapter.genres.map(genre => (
+                <span key={genre} className="genre-tag">{genre}</span>
+              ))}
+            </div>
+          )}
+        </div>
+        <div className="chapter-overlay">
+          <button className="read-button">Đọc Ngay</button>
+          <p className="chapter-description">{chapter.description || 'Chưa có mô tả'}</p>
+        </div>
       </div>
-    </main>
+    
   );
 }
 
