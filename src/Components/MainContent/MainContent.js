@@ -1,96 +1,77 @@
-import React from 'react'
-import Story from '../Story/Story'
-import './MainContent.css'
+import React, { useState, useEffect } from 'react';
+import Story from '../Story/Story';
+import { fetchData } from '../../api';
+import './MainContent.css';
 
 function MainContent() {
-  // Data mẫu dựa trên cấu trúc database
-  const stories = [
-    {
-      mangaId: 1,
-      author_name: "Hirohiko Araki",
-      manga_name: "Jojolion",
-      manga_description: "Manga JoJo part 8",
-      folderBia: "FolderBia/Jojolion/Cover.png",
-      genres: ["Action", "Mystery", "Seinen"] // Từ bảng Manga_Genre join với Genre
-    },
-    {
-      mangaId: 2,
-      author_name: "Yamada Kanehito, Abe Tsukasa",
-      manga_name: "Sousou No Frieren",
-      manga_description: "Click to select the whole column",
-      folderBia: "FolderBia/SousouNoFrieren/Cover.png",
-      genres: ["Shonen", "Fantasy", "Slice of life", "Monsters"]
-    },
-    {
-      mangaId: 3,
-      author_name: "Tatsuki Fujimoto",
-      manga_name: "Chainsaw Man",
-      manga_description: null,
-      folderBia: "FolderBia/ChainsawMan/Cover.png",
-      genres: ["Action", "Shonen", "Monsters"]
-    },
-    {
-      mangaId: 4,
-      author_name: "Tatsuki Fujimoto",
-      manga_name: "Chainsaw Man",
-      manga_description: null,
-      folderBia: "FolderBia/ChainsawMan/Cover.png",
-      genres: ["Action", "Shonen", "Monsters"]
-    },
-    {
-      mangaId: 5,
-      author_name: "Tatsuki Fujimoto",
-      manga_name: "Chainsaw Man",
-      manga_description: null,
-      folderBia: "FolderBia/ChainsawMan/Cover.png",
-      genres: ["Action", "Shonen", "Monsters"]
-    },
-    {
-      mangaId: 6,
-      author_name: "Tatsuki Fujimoto",
-      manga_name: "Chainsaw Man",
-      manga_description: null,
-      folderBia: "FolderBia/ChainsawMan/Cover.png",
-      genres: ["Action", "Shonen", "Monsters"]
-    },
-    {
-      mangaId: 7,
-      author_name: "Tatsuki Fujimoto",
-      manga_name: "Chainsaw Man",
-      manga_description: null,
-      folderBia: "FolderBia/ChainsawMan/Cover.png",
-      genres: ["Action", "Shonen", "Monsters"]
-    },
-    {
-      mangaId: 8,
-      author_name: "Tatsuki Fujimoto",
-      manga_name: "Chainsaw Man",
-      manga_description: null,
-      folderBia: "FolderBia/ChainsawMan/Cover.png",
-      genres: ["Action", "Shonen", "Monsters"]
-    },
-  ];
+  const [mangas, setMangas] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const getMangas = async () => {
+      try {
+        setLoading(true);
+        const result = await fetchData('/api/Mangas');
+        console.log('API response:', result);
+  
+        // Kiểm tra và lấy mảng Mangas
+        if (result?.Mangas?.length > 0) {
+          setMangas(result.Mangas);
+        } else {
+          setError('Không có dữ liệu truyện');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        setError(error?.message || 'Không thể tải dữ liệu');
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    getMangas();
+  }, []);
+  
+  if (loading) {
+    return (
+      <div className="loading">
+        <div className="spinner"></div>
+        <p>Đang tải dữ liệu...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="error">
+        <p>Có lỗi xảy ra: {error}</p>
+        <button 
+          onClick={() => window.location.reload()}
+          className="reload-button"
+        >
+          Tải lại
+        </button>
+      </div>
+    );
+  }
 
   return (
     <main className="main-content">
       <h2 className="section-title">Truyện Mới Cập Nhật</h2>
       <div className="stories-grid">
-        {stories.map((story) => (
-          <Story 
-            key={story.mangaId} 
-            story={{
-              id: story.mangaId,
-              title: story.manga_name,
-              author: story.author_name,
-              cover: story.folderBia,
-              description: story.manga_description || "Chưa có mô tả",
-              genres: story.genres
-            }} 
-          />
-        ))}
+        {mangas.length > 0 ? (
+          mangas.map((manga) => (
+            <Story 
+              key={manga.mangaId} 
+              manga={manga}
+            />
+          ))
+        ) : (
+          <div className="no-manga">Không có truyện nào</div>
+        )}
       </div>
     </main>
-  )
+  );
 }
 
 export default MainContent;
