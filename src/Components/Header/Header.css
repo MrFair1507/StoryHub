@@ -1,6 +1,9 @@
 .header {
   background-color: white;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
 .header-container {
@@ -8,13 +11,7 @@
   margin: 0 auto;
   padding: 0 20px;
 }
-.logo a {
-  color: inherit;
-}
 
-.logo h1:hover {
-  opacity: 0.8;
-}
 .header-top {
   height: 64px;
   display: flex;
@@ -28,6 +25,10 @@
   font-weight: bold;
 }
 
+.logo a:hover h1 {
+  opacity: 0.8;
+}
+
 .search-bar {
   display: flex;
   width: 500px;
@@ -38,8 +39,16 @@
 .search-bar input {
   width: 100%;
   padding: 8px 16px;
+  padding-right: 40px;
   border-radius: 20px;
   border: 1px solid #e5e7eb;
+  transition: all 0.2s;
+}
+
+.search-bar input:focus {
+  outline: none;
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
 }
 
 .search-icon {
@@ -65,20 +74,23 @@
   padding: 8px 16px;
   border-radius: 20px;
   text-decoration: none;
-  transition: background-color 0.3s;
+  transition: all 0.2s;
 }
 
 .create-button:hover {
   background: #6d28d9;
+  transform: translateY(-1px);
 }
 
 .icon {
   color: #4b5563;
   cursor: pointer;
+  transition: all 0.2s;
 }
 
 .icon:hover {
   color: #7c3aed;
+  transform: scale(1.1);
 }
 
 .genre-nav {
@@ -86,6 +98,12 @@
   gap: 24px;
   padding: 12px 0;
   overflow-x: auto;
+  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;  /* IE and Edge */
+}
+
+.genre-nav::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari, Opera */
 }
 
 .genre-button {
@@ -94,8 +112,12 @@
   border: none;
   cursor: pointer;
   white-space: nowrap;
+  padding: 6px 12px;
+  border-radius: 16px;
+  transition: all 0.2s;
 }
 
 .genre-button:hover {
   color: #7c3aed;
+  background-color: rgba(124, 58, 237, 0.1);
 }

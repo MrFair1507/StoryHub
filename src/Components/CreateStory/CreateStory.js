@@ -3,19 +3,23 @@ import './CreateStory.css';
 
 function CreateStory() {
   const [formData, setFormData] = useState({
-    title: '',
-    author: '',
-    description: '',
+    manga_name: '',
+    author_name: '',
+    manga_description: '',
     cover: null,
-    genres: []
+    genreIds: [] // Sử dụng ID thay vì tên genre
   });
 
+  // Genres từ database
   const availableGenres = [
-    "Phiêu lưu",
-    "Lãng mạn",
-    "Kinh dị",
-    "Trinh thám",
-    "Đời thường"
+    { genreId: 1, genre_name: "Action" },
+    { genreId: 2, genre_name: "Mystery" },
+    { genreId: 3, genre_name: "Seinen" },
+    { genreId: 4, genre_name: "Dark Fantasy" },
+    { genreId: 5, genre_name: "Shonen" },
+    { genreId: 6, genre_name: "Fantasy" },
+    { genreId: 7, genre_name: "Slice of life" },
+    { genreId: 8, genre_name: "Monsters" }
   ];
 
   const handleInputChange = (e) => {
@@ -32,19 +36,19 @@ function CreateStory() {
     });
   };
 
-  const handleGenreChange = (genre) => {
+  const handleGenreChange = (genreId) => {
     setFormData({
       ...formData,
-      genres: formData.genres.includes(genre)
-        ? formData.genres.filter(g => g !== genre)
-        : [...formData.genres, genre]
+      genreIds: formData.genreIds.includes(genreId)
+        ? formData.genreIds.filter(id => id !== genreId)
+        : [...formData.genreIds, genreId]
     });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log(formData);
-    // API call here
+    // API call to save manga and manga_genre relationships
   };
 
   return (
@@ -52,11 +56,11 @@ function CreateStory() {
       <h2>Tạo Truyện Mới</h2>
       <form onSubmit={handleSubmit} className="create-story-form">
         <div className="form-group">
-          <label>Tiêu đề</label>
+          <label>Tên Truyện</label>
           <input
             type="text"
-            name="title"
-            value={formData.title}
+            name="manga_name"
+            value={formData.manga_name}
             onChange={handleInputChange}
             required
           />
@@ -66,8 +70,8 @@ function CreateStory() {
           <label>Tác giả</label>
           <input
             type="text"
-            name="author"
-            value={formData.author}
+            name="author_name"
+            value={formData.author_name}
             onChange={handleInputChange}
             required
           />
@@ -76,8 +80,8 @@ function CreateStory() {
         <div className="form-group">
           <label>Mô tả</label>
           <textarea
-            name="description"
-            value={formData.description}
+            name="manga_description"
+            value={formData.manga_description}
             onChange={handleInputChange}
             required
           />
@@ -97,13 +101,13 @@ function CreateStory() {
           <label>Thể loại</label>
           <div className="genres-grid">
             {availableGenres.map(genre => (
-              <label key={genre} className="genre-checkbox">
+              <label key={genre.genreId} className="genre-checkbox">
                 <input
                   type="checkbox"
-                  checked={formData.genres.includes(genre)}
-                  onChange={() => handleGenreChange(genre)}
+                  checked={formData.genreIds.includes(genre.genreId)}
+                  onChange={() => handleGenreChange(genre.genreId)}
                 />
-                {genre}
+                {genre.genre_name}
               </label>
             ))}
           </div>

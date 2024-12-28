@@ -4,13 +4,16 @@ import { Link } from "react-router-dom";
 import "./Header.css";
 
 const Header = () => {
+  // Genres từ database
   const genres = [
-    "Tất cả",
-    "Phiêu lưu",
-    "Lãng mạn",
-    "Kinh dị",
-    "Trinh thám",
-    "Đời thường",
+    { genreId: 1, genre_name: "Action" },
+    { genreId: 2, genre_name: "Mystery" },
+    { genreId: 3, genre_name: "Seinen" },
+    { genreId: 4, genre_name: "Dark Fantasy" },
+    { genreId: 5, genre_name: "Shonen" },
+    { genreId: 6, genre_name: "Fantasy" },
+    { genreId: 7, genre_name: "Slice of life" },
+    { genreId: 8, genre_name: "Monsters" }
   ];
 
   return (
@@ -18,8 +21,8 @@ const Header = () => {
       <div className="header-container">
         <div className="header-top">
           <div className="logo">
-            <Link to="/" style={{ textDecoration: "none" }}>
-              <h1>StoryHub</h1>
+            <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+              <h1>MangaHub</h1>
             </Link>
           </div>
 
@@ -39,9 +42,10 @@ const Header = () => {
         </div>
 
         <nav className="genre-nav">
+          <button className="genre-button">Tất cả</button>
           {genres.map((genre) => (
-            <button key={genre} className="genre-button">
-              {genre}
+            <button key={genre.genreId} className="genre-button">
+              {genre.genre_name}
             </button>
           ))}
         </nav>
@@ -49,4 +53,5 @@ const Header = () => {
     </header>
   );
 };
+
 export default Header;
