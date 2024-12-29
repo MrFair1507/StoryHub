@@ -3,15 +3,14 @@ import "./Story.css";
 import { Link } from "react-router-dom";
 
 function Story({ manga }) {
-  // Log để debug dữ liệu genres
+  console.log("Manga data:", manga);
   console.log("Genre data:", manga.genreName);
 
-  // Kiểm tra nếu genreName là một object có $values
   const genres = manga.genreName?.$values || manga.genreName || [];
 
   return (
     <Link
-      to={`/manga/${manga.MangaId}`}
+      to={`/story/${manga.MangaID}`}
       className="story-card"
       style={{ textDecoration: "none" }}
     >

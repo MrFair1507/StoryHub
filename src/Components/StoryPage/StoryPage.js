@@ -2,7 +2,8 @@ import React from "react";
 import MangaDetails from "../MangaDetails/MangaDetails";
 import Header from "../Header/Header";
 import './StoryPage.css';
-import StoryPageMainContent from "../StoryPageMainContent/StoryPageMainContent";
+import ChapterUpload from "../ChapterUpload/ChapterUpload";
+
 
 
 function StoryPage() {
@@ -10,7 +11,7 @@ function StoryPage() {
   <div className="story-page">
       <Header />
       <MangaDetails />
-      <StoryPageMainContent/>
+      <ChapterUpload />
     </div>
  );
 }
