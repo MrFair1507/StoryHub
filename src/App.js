@@ -22,7 +22,7 @@ const App = () => {
         <Route path="/create-story" element={<div><Header/><CreateStory /></div>} />
         <Route path="/manga-details" element={<MangaDetails />} />
         <Route path="/chapter/:chapterId" element={<ChapterViewer />} />
-        <Route path="/story/:mangaId/upload-chapter" element={<ChapterUpload />} />
+        <Route path="/manga/:mangaId/upload-chapter" element={<ChapterUpload />} />
       </Routes>
     </Router>
   );
