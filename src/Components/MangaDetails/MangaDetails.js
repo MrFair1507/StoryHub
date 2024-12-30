@@ -1,32 +1,55 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
+import { Link } from 'react-router-dom';
 import './MangaDetails.css';
 import DeleteChapter from '../DeleteChapter/DeleteChapter';
 
-function MangaDetails() {
+const MangaDetails = forwardRef(({ id }, ref) => { // Nhận id từ props
   const [mangaData, setMangaData] = useState(null);
   const [chapters, setChapters] = useState([]);
-  const { id } = useParams();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedChapterId, setSelectedChapterId] = useState(null);
 
-  useEffect(() => {
-    fetchMangaDetails();
-  }, [id]);
-
   const fetchMangaDetails = async () => {
+    if (!id) return;
+
     try {
+      setLoading(true);
+      console.log("Fetching manga details for ID:", id); // Debug log
       const response = await fetch(`http://localhost:5034/api/Mangas/Manga/${id}`);
+      
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
+      
       const data = await response.json();
-      setMangaData(data.manga);
-      setChapters(data.chapters.$values);
+      console.log("Fetched data:", data); // Debug log
+      
+      if (data && data.manga) {
+        setMangaData(data.manga);
+        setChapters(data.chapters.$values || []);
+        setError(null);
+      } else {
+        throw new Error('Invalid data format received');
+      }
     } catch (error) {
       console.error('Error fetching manga details:', error);
+      setError('Không thể tải thông tin manga. Vui lòng thử lại sau.');
+    } finally {
+      setLoading(false);
     }
   };
+
+  useImperativeHandle(ref, () => ({
+    fetchMangaDetails
+  }));
+
+  useEffect(() => {
+    if (id) {
+      fetchMangaDetails();
+    }
+  }, [id]);
 
   const handleDeleteClick = (chapterId) => {
     setSelectedChapterId(chapterId);
@@ -35,11 +58,19 @@ function MangaDetails() {
 
   const handleDeleteSuccess = () => {
     setShowDeleteModal(false);
-    fetchMangaDetails(); // Refresh the chapters list
+    fetchMangaDetails();
   };
 
+  if (loading) {
+    return <div className="loading">Đang tải...</div>;
+  }
+
+  if (error) {
+    return <div className="error-message">{error}</div>;
+  }
+
   if (!mangaData) {
-    return <div className="loading">Loading...</div>;
+    return <div className="error-message">Không tìm thấy manga</div>;
   }
 
   return (
@@ -57,26 +88,18 @@ function MangaDetails() {
         </div>
         <div className="manga-info">
           <h1>{mangaData.mangaName}</h1>
-          <div className="author">Author: {mangaData.authorName}</div>
+          <div className="author">Tác giả: {mangaData.authorName}</div>
           <div className="genres">
-            {mangaData.genreName.$values?.length > 0 ? (
-              mangaData.genreName.$values.map((genre, index) => (
-                <span key={index} className="genre-tag">{genre}</span>
-              ))
-            ) : (
-              <span>No genres available</span>
-            )}
+            {mangaData.genreName.$values?.map((genre, index) => (
+              <span key={index} className="genre-tag">{genre}</span>
+            ))}
           </div>
           <div className="description">{mangaData.mangaDescription}</div>
         </div>
       </div>
+
       <div className="manga-chapters">
-        <div className="chapters-header">
-          <h2>Chapters</h2>
-          <Link to={`/story/${id}/upload-chapter`} className="add-chapter-button">
-            Add New Chapter
-          </Link>
-        </div>
+        <h2>Danh sách Chapter</h2>
         {chapters.length > 0 ? (
           <ul>
             {chapters.map((chapter) => (
@@ -85,20 +108,22 @@ function MangaDetails() {
                   to={`/chapter/${chapter.chapterId}`}
                   className="chapter-link"
                 >
-                  <strong>{chapter.chapterName}</strong> - {chapter.language} 
-                  (Uploaded on {new Date(chapter.uploadDate).toLocaleDateString()})
+                  <strong>{chapter.chapterName}</strong> - {chapter.language}
+                  <span className="upload-date">
+                    {new Date(chapter.uploadDate).toLocaleDateString('vi-VN')}
+                  </span>
                 </Link>
                 <button 
                   onClick={() => handleDeleteClick(chapter.chapterId)}
                   className="delete-chapter-button"
                 >
-                  Delete
+                  Xóa
                 </button>
               </li>
             ))}
           </ul>
         ) : (
-          <p>No chapters available for this manga.</p>
+          <p>Chưa có chapter nào.</p>
         )}
       </div>
 
@@ -111,6 +136,8 @@ function MangaDetails() {
       )}
     </div>
   );
-}
+});
+
+MangaDetails.displayName = 'MangaDetails';
 
 export default MangaDetails;

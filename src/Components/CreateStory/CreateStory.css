@@ -90,3 +90,52 @@
   .genre-checkbox:hover {
     background: #edf2f7;
   }
+  /* Thêm styles này vào file CreateStory.css */
+
+.error-text {
+  color: #e53e3e;
+  font-size: 14px;
+  margin-top: 4px;
+  display: block;
+}
+
+.file-input {
+  background: #f8fafc;
+  padding: 12px;
+  border: 2px dashed #e2e8f0;
+  border-radius: 8px;
+  width: 100%;
+  cursor: pointer;
+}
+
+.file-input:hover {
+  border-color: #7c3aed;
+}
+
+.cover-preview {
+  margin-top: 12px;
+  border-radius: 8px;
+  overflow: hidden;
+  max-width: 200px;
+}
+
+.cover-preview img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.submit-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.error-message {
+  background: #fff5f5;
+  color: #e53e3e;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #feb2b2;
+  margin-bottom: 16px;
+}

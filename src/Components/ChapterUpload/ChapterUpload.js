@@ -1,56 +1,40 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import './ChapterUpload.css';
+import React, { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
+import "./ChapterUpload.css";
+import { format } from "date-fns";
 
 function ChapterUpload() {
-  const { mangaId } = useParams();
+  const { id } = useParams();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!mangaId) {
-      alert('Không tìm thấy manga');
-      navigate('/');
-    }
-  }, [mangaId, navigate]);
-
   const [formData, setFormData] = useState({
-    chapterName: '',
-    language: '',
-    zipFile: null
+    chapterName: "",
+    language: "",
+    zipFile: null,
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [filePreview, setFilePreview] = useState(null);
-  const [uploadProgress, setUploadProgress] = useState(0);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
-    setError(null);
   };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      if (!file.name.toLowerCase().endsWith('.zip')) {
-        setError('Vui lòng chọn file ZIP');
-        setFilePreview(null);
+      if (!file.name.toLowerCase().endsWith(".zip")) {
+        setError("Please upload a valid ZIP file");
         return;
       }
-      
-      if (file.size > 100 * 1024 * 1024) {
-        setError('File không được vượt quá 100MB');
-        setFilePreview(null);
-        return;
-      }
-
-      setFormData(prev => ({
+      console.log("Selected file:", file); // Debug log
+      setFormData((prev) => ({
         ...prev,
-        zipFile: file
+        zipFile: file,
       }));
       setFilePreview(file.name);
       setError(null);
@@ -58,90 +42,75 @@ function ChapterUpload() {
   };
 
   const validateForm = () => {
-    const errors = [];
-    if (!formData.chapterName.trim()) {
-      errors.push('Vui lòng nhập tên chapter');
-    }
-    if (!formData.language.trim()) {
-      errors.push('Vui lòng nhập ngôn ngữ');
-    }
-    if (!formData.zipFile) {
-      errors.push('Vui lòng chọn file ZIP');
-    }
-    if (errors.length > 0) {
-      setError(errors.join('\n'));
+    const validations = {
+      chapterName: {
+        isValid: formData.chapterName.trim().length > 0,
+        message: "Chapter name is required",
+      },
+      language: {
+        isValid: formData.language.trim().length > 0,
+        message: "Language is required",
+      },
+      zipFile: {
+        isValid:
+          formData.zipFile &&
+          formData.zipFile.name.toLowerCase().endsWith(".zip"),
+        message: "Please upload a valid ZIP file",
+      },
+    };
+
+    const failedValidations = Object.entries(validations)
+      .filter(([_, check]) => !check.isValid)
+      .map(([_, check]) => check.message);
+
+    if (failedValidations.length > 0) {
+      setError(failedValidations.join(", "));
       return false;
     }
+
     return true;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validateForm()) return;
-    if (!mangaId) {
-      setError('Không tìm thấy manga ID');
+
+    if (!id) {
+      setError("Manga ID is missing");
       return;
     }
 
+    if (!validateForm()) return;
+
     setLoading(true);
     setError(null);
-    setUploadProgress(0);
 
     const uploadData = new FormData();
-    uploadData.append('ChapterName', formData.chapterName);
-    uploadData.append('Language', formData.language);
-    uploadData.append('UploadDate', new Date().toISOString());
-    
-    if (formData.zipFile) {
-      uploadData.append('zipFile', formData.zipFile);
-    }
+    uploadData.append("zipFile", formData.zipFile);
+    uploadData.append("chapterUploadDTO.ChapterName", formData.chapterName);
+    uploadData.append("chapterUploadDTO.Language", formData.language);
 
-    // Log data trước khi gửi
-    console.log('MangaId:', mangaId);
-    console.log('Uploading to:', `http://localhost:5034/api/Mangas/UploadChapter/${mangaId}`);
-    for (let pair of uploadData.entries()) {
-      console.log(pair[0] + ': ' + pair[1]);
-    }
+    // Format the date in MM/DD/YYYY format
+    const formattedDate = format(new Date(), "MM/dd/yyyy");
+    uploadData.append("chapterUploadDTO.UploadDate", formattedDate);
 
     try {
       const response = await axios.post(
-        `http://localhost:5034/api/Mangas/UploadChapter/${mangaId}`,
+        `http://localhost:5034/api/Mangas/UploadChapter/${id}`,
         uploadData,
         {
           headers: {
-            'Content-Type': 'multipart/form-data'
+            "Content-Type": "multipart/form-data",
           },
-          onUploadProgress: (progressEvent) => {
-            const percentCompleted = Math.round(
-              (progressEvent.loaded * 100) / progressEvent.total
-            );
-            setUploadProgress(percentCompleted);
-          }
         }
       );
 
-      if (response.data) {
-        alert('Upload chapter thành công!');
-        navigate(`/manga/${mangaId}`);
+      if (response.status === 201) {
+        console.log("Upload successful!");
       }
+      navigate(`/story/${id}`);
     } catch (err) {
-      console.error('Upload error:', err);
-      let errorMessage = 'Có lỗi xảy ra khi upload chapter';
-      
-      if (err.response?.data) {
-        if (typeof err.response.data === 'object') {
-          if (err.response.data.title) {
-            errorMessage = err.response.data.title;
-          } else if (err.response.data.errors) {
-            const errors = Object.values(err.response.data.errors).flat();
-            errorMessage = errors.join(', ');
-          }
-        } else if (typeof err.response.data === 'string') {
-          errorMessage = err.response.data;
-        }
-      }
-      
-      setError(errorMessage);
+      console.log("Error Response:", err.response?.data);
+      setError("Upload failed. Please check file and data format.");
     } finally {
       setLoading(false);
     }
@@ -149,75 +118,52 @@ function ChapterUpload() {
 
   return (
     <div className="chapter-upload-container">
-      <h2>Upload Chapter Mới {mangaId ? `cho Manga #${mangaId}` : ''}</h2>
-      
-      {error && (
-        <div className="error-message">
-          {typeof error === 'string' ? error : 'Có lỗi xảy ra khi upload chapter'}
-        </div>
-      )}
+      <h2>Upload New Chapter</h2>
 
-      <form onSubmit={handleSubmit} className="upload-form">
+      {error && <div className="error-message">{error}</div>}
+
+      <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label>Tên Chapter:</label>
+          <label>Chapter Name:</label>
           <input
             type="text"
             name="chapterName"
             value={formData.chapterName}
             onChange={handleInputChange}
-            placeholder="Nhập tên chapter"
-            disabled={loading}
+            placeholder="Enter chapter name"
             required
           />
         </div>
 
         <div className="form-group">
-          <label>Ngôn ngữ:</label>
+          <label>Language:</label>
           <input
             type="text"
             name="language"
             value={formData.language}
             onChange={handleInputChange}
-            placeholder="Nhập ngôn ngữ"
-            disabled={loading}
+            placeholder="Enter language"
             required
           />
         </div>
 
         <div className="form-group">
-          <label>File Chapter (ZIP):</label>
+          <label>Chapter Files (ZIP):</label>
           <input
             type="file"
             accept=".zip"
             onChange={handleFileChange}
             className="file-input"
-            disabled={loading}
           />
           {filePreview && (
-            <div className="file-preview">
-              File đã chọn: {filePreview}
-            </div>
+            <div className="file-preview">Selected file: {filePreview}</div>
           )}
         </div>
 
-        {loading && (
-          <div className="upload-progress">
-            <div 
-              className="progress-bar"
-              style={{ width: `${uploadProgress}%` }}
-            />
-            <span>{uploadProgress}%</span>
-          </div>
-        )}
-
-        <button 
-          type="submit" 
-          className="submit-button"
-          disabled={loading}
-        >
-          {loading ? 'Đang upload...' : 'Upload Chapter'}
+        <button type="submit" className="submit-button" disabled={loading}>
+          {loading ? "Uploading..." : "Upload Chapter"}
         </button>
-        </form>
+      </form>
     </div>
   );
 }
