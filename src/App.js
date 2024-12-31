@@ -11,19 +11,32 @@ import MangaDetails from "./Components/MangaDetails/MangaDetails";
 
 const App = () => {
   const [selectedGenre, setSelectedGenre] = useState(null);
+  const [searchTerm, setSearchTerm] = useState(""); // Thêm state cho searchTerm
 
   const handleGenreSelect = (genre) => {
     setSelectedGenre(genre);
   };
 
+  const handleSearch = (term) => {
+    setSearchTerm(term);
+  };
+
   return (
     <BrowserRouter>
       <div className="app">
-        <Header onGenreSelect={handleGenreSelect} />
+        <Header
+          onGenreSelect={handleGenreSelect}
+          onSearch={handleSearch} // Thêm prop onSearch
+        />
         <Routes>
           <Route
             path="/"
-            element={<MainContent selectedGenre={selectedGenre} />}
+            element={
+              <MainContent
+                selectedGenre={selectedGenre}
+                searchTerm={searchTerm} // Truyền searchTerm xuống MainContent
+              />
+            }
           />
           <Route path="/story/:id" element={<StoryPage />} />
           <Route path="/create-story" element={<CreateStory />} />

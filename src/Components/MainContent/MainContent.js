@@ -3,16 +3,17 @@ import Story from "../Story/Story";
 import { fetchData } from "../../api"; // Đảm bảo rằng đường dẫn đúng
 import "./MainContent.css";
 
-function MainContent({ selectedGenre }) {
+function MainContent({ selectedGenre, searchTerm }) {
   const [mangas, setMangas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [filteredMangas, setFilteredMangas] = useState([]);
 
+  // Fetch data từ API
   useEffect(() => {
     const getMangas = async () => {
       try {
         setLoading(true);
-        // Tạo endpoint dựa trên genre được chọn
         const endpoint = selectedGenre
           ? `/api/Mangas/genre/${encodeURIComponent(selectedGenre)}`
           : "/api/Mangas";
@@ -22,6 +23,7 @@ function MainContent({ selectedGenre }) {
 
         if (result?.Mangas) {
           setMangas(result.Mangas);
+          setFilteredMangas(result.Mangas); // Khởi tạo filteredMangas
         } else {
           setError("Không có dữ liệu truyện");
         }
@@ -34,18 +36,28 @@ function MainContent({ selectedGenre }) {
     };
 
     getMangas();
-  }, [selectedGenre]); // Chạy lại khi selectedGenre thay đổi
+  }, [selectedGenre]);
 
-  if (loading) {
+  // Xử lý tìm kiếm
+  useEffect(() => {
+    if (searchTerm.trim()) {
+      const filtered = mangas.filter((manga) =>
+        manga.mangaName.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredMangas(filtered);
+    } else {
+      setFilteredMangas(mangas);
+    }
+  }, [searchTerm, mangas]);
+
+  if (loading)
     return (
       <div className="loading">
         <div className="spinner"></div>
         <p>Đang tải dữ liệu...</p>
       </div>
     );
-  }
-
-  if (error) {
+  if (error)
     return (
       <div className="error">
         <p>Có lỗi xảy ra: {error}</p>
@@ -57,16 +69,21 @@ function MainContent({ selectedGenre }) {
         </button>
       </div>
     );
-  }
 
   return (
     <main className="main-content">
       <h2 className="section-title">Truyện Mới Cập Nhật</h2>
       <div className="stories-grid">
-        {mangas.length > 0 ? (
-          mangas.map((manga) => <Story key={manga.mangaId} manga={manga} />)
+        {filteredMangas.length > 0 ? (
+          filteredMangas.map((manga) => (
+            <Story key={manga.mangaId} manga={manga} />
+          ))
         ) : (
-          <div className="no-manga">Không có truyện nào</div>
+          <div className="no-manga">
+            {searchTerm
+              ? "Không tìm thấy truyện phù hợp"
+              : "Không có truyện nào"}
+          </div>
         )}
       </div>
     </main>
